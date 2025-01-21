@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException, Path
 import random
 from datetime import datetime
 
-from models import FilmResponse, Korisnik, BaseProizvod, RequestProizvod, ResponseProizvod, KorisnikBase, KorisnikCreate, KorisnikResponse, Korisnik, Knjiga, KnjigaRequest, KnjigaResponse
+from models import FilmResponse, Korisnik, BaseProizvod, RequestProizvod, ResponseProizvod, KorisnikBase, KorisnikCreate, KorisnikResponse, Korisnik, Knjiga, KnjigaRequest, KnjigaResponse, Automobil, AutomobilRequest, AutomobilResponse, BaseCar
 
 app = FastAPI()
 
@@ -110,3 +110,43 @@ def dohvati_knjige(min_stranice: int = 0, max_stranice: int = 1000, godina_izdav
         if knjiga["broj_stranica"] >= min_stranice and knjiga["broj_stranica"] <= max_stranice and knjiga["godina_izdavanja"] == godina_izdavanja:
             filtrirane_knjige.append(knjiga)
     return filtrirane_knjige
+
+## 3.2 Zadaci za vježbu: Obrada grešaka
+# 1. zadatak
+automobili = [
+    {"id": 1, "marka": "Toyota", "model": "Corolla", "godina_proizvodnje": 2020, "cijena": 18000.0, "boja": "crvena"},
+    {"id": 2, "marka": "Volkswagen", "model": "Golf", "godina_proizvodnje": 2019, "cijena": 17000.0, "boja": "plava"},
+    {"id": 3, "marka": "BMW", "model": "3 Series", "godina_proizvodnje": 2021, "cijena": 35000.0, "boja": "bijela"},
+    {"id": 4, "marka": "Audi", "model": "A4", "godina_proizvodnje": 2020, "cijena": 30000.0, "boja": "crna"}
+]
+
+@app.get("/automobili/{id}", response_model = Automobil)
+def dohvati_automobile(id:int = Path(title = "ID automobila", ge=1)):
+    for automobil in automobili:
+        if automobil["id"] == id:
+            return automobil
+    raise HTTPException(status_code = 404, detail =f"Automobil s id-em {id} nije pronađen.")
+
+# 2. zadatak
+@app.get("/automobili")
+def dohvati_knjige_by_query(min_cijena: float = 1,max_cijena: float = 1000000, min_godina: int = 0 , max_godina: int = 2025):
+    if min_cijena > max_cijena:
+        raise HTTPException(status_code=400, detail="Minimalna cijena ne može biti veća od maksimalne cijene.")
+    if min_godina > max_godina:
+        raise HTTPException(status_code=400, detail="Minimalna godina proizvodnje ne može biti veća od maksimalne godine proizvodnje.")
+    filtrirani_automobili = []
+    for automobil in automobili:
+        if min_cijena <= automobil["cijena"] <= max_cijena and min_godina <= automobil["godina_proizvodnje"] <= max_godina:
+            filtrirani_automobili.append(automobil)
+    return filtrirani_automobili
+
+# 3. zadatak
+@app.post("/automobili", response_model=BaseCar)
+def dodaj_automobil(automobil_request: AutomobilRequest):
+    for pohranjeni_automobil in automobili:
+        if pohranjeni_automobil["marka"] == automobil_request.marka and pohranjeni_automobil["model"] == automobil_request.model:
+            raise HTTPException(status_code=400, detail="Automobil već postoji.")
+    new_id = automobili[-1]["id"] + 1
+    novi_automobil: AutomobilResponse = {"id": new_id, ** automobil_request.model_dump()}
+    automobili.append(novi_automobil)
+    return novi_automobil

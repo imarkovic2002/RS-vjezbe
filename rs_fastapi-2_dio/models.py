@@ -142,3 +142,25 @@ class CCTV_frame(BaseModel):
     id: int
     vrijeme_snimanja: datetime
     koordinate: tuple[float,float] = (0.0, 0.0)
+
+## 3.2 Zadaci za vježbu: Obrada grešaka
+class Automobil(BaseModel):
+    marka: str
+    model: str
+    godina_proizvodnje: int
+    cijena: float
+    boja: str
+    
+class BaseCar(BaseModel):
+    marka: str
+    model: str
+    godina_proizvodnje: int
+    cijena: float
+    boja: str
+
+class AutomobilRequest(BaseCar):
+    pass
+
+class AutomobilResponse(BaseCar):
+    id: int
+    cijena_pdv: float
