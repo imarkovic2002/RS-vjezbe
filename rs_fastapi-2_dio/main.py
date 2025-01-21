@@ -1,11 +1,11 @@
 ## Nastavak FastAPI-ja - RS06
 ## 15.1.2025.
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Path
 import random
 from datetime import datetime
 
-from models import FilmResponse, Korisnik, BaseProizvod, RequestProizvod, ResponseProizvod, KorisnikBase, KorisnikCreate, KorisnikResponse, Korisnik
+from models import FilmResponse, Korisnik, BaseProizvod, RequestProizvod, ResponseProizvod, KorisnikBase, KorisnikCreate, KorisnikResponse, Korisnik, Knjiga, KnjigaRequest, KnjigaResponse
 
 app = FastAPI()
 
@@ -75,3 +75,38 @@ def registracija_korisnika(korisnik: KorisnikCreate):
 @app.get("/korisnici",response_model=Korisnik)
 def get_korisnici():
     return korisnici
+
+
+
+### 3. Obrada grešaka
+
+knjige = [
+{"id": 1, "naslov": "Ana Karenjina", "autor": "Lav Nikolajevič Tolstoj", "broj_stranica": 864, "godina_izdavanja": 1877},
+{"id": 2, "naslov": "Kiklop", "autor": "Ranko Marinković", "broj_stranica": 488, "godina_izdavanja": 1965},
+{"id": 3, "naslov": "Proces", "autor": "Franz Kafka", "broj_stranica": 208, "godina_izdavanja": 1925}
+]
+
+@app.get("/knjige/{naslov}", response_model=Knjiga)
+def dohvati_knjige(naslov: str):
+    for knjiga in knjige:
+        if knjiga["naslov"] == naslov:
+            return knjiga
+    raise HTTPException(status_code=404, detail="Knjiga nije pronađena.")
+
+@app.post("/knjige", response_model=KnjigaResponse)
+def dodaj_knjigu(knjiga_request: KnjigaRequest):
+    for pohranjena_knjiga in knjige:
+        if pohranjena_knjiga["naslov"] == knjiga_request.naslov:
+            raise HTTPException(status_code = 400, detail = "Knjiga već postoji.")
+    new_id = knjige[-1]["id"] + 1 
+    nova_knjiga : KnjigaResponse = {"id": new_id, **knjiga_request.model_dump()}
+    knjige.append(nova_knjiga)
+    return nova_knjiga
+
+@app.get("/knjige")
+def dohvati_knjige(min_stranice: int = 0, max_stranice: int = 1000, godina_izdavanja: int = 0):
+    filtrirane_knjige = []
+    for knjiga in knjige:
+        if knjiga["broj_stranica"] >= min_stranice and knjiga["broj_stranica"] <= max_stranice and knjiga["godina_izdavanja"] == godina_izdavanja:
+            filtrirane_knjige.append(knjiga)
+    return filtrirane_knjige

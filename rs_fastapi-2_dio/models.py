@@ -100,12 +100,18 @@ class Izdavač(BaseModel):
     adresa: str
 
 class Knjiga(BaseModel):
+    id: int
+    naziv: str
+    autor: str
+
+class KnjigaRequest(BaseModel): 
     naslov: str
-    ime_autora: str
-    prezime_autora: str
-    godina_izdavanja: int = datetime.now().year
-    broj_stranica: int
-    izdavač: Izdavač
+    autor: str
+    broj_stranica: int = Field(ge=1)
+    godina_izdavanja: int = Field(ge=0, le=2024)
+
+class KnjigaResponse(KnjigaRequest):
+    id: int
 
 # 2. zadatak
 class Admin(BaseModel):
