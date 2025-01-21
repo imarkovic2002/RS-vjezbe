@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, Literal,TypedDict
 from datetime import datetime
 
@@ -10,12 +10,12 @@ class FilmResponse(BaseModel):
     godina: int
 
 class Korisnik(BaseModel):
-    id: int
-    ime: str
-    prezime: str
-    email: str
-    dob: int 
-    racun_aktivan: bool = True
+    id: int = Field(description="Jedinstveni identifikator korisnika", ge = 1, le=100)
+    ime: str = Field(description="Ime korisnika", default = "John")
+    prezime: str = Field(description="Prezime korisnika", default = "Due")
+    email: str = Field(description="Email adresa korisnika", default = "JohnDoe@gmail.com")
+    dob: int = Field(description= "Datum rođenja korisnika", ge=1900, le=2021)
+    racun_aktivan: bool = Field(description="Je li korisnik aktivan", default = True)
 
 class Proizvod(BaseModel):
     id: int

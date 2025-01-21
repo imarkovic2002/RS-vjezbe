@@ -5,7 +5,7 @@ from fastapi import FastAPI
 import random
 from datetime import datetime
 
-from models import FilmResponse, Korisnik, BaseProizvod, RequestProizvod, ResponseProizvod, KorisnikBase, KorisnikCreate, KorisnikResponse
+from models import FilmResponse, Korisnik, BaseProizvod, RequestProizvod, ResponseProizvod, KorisnikBase, KorisnikCreate, KorisnikResponse, Korisnik
 
 app = FastAPI()
 
@@ -71,3 +71,7 @@ def registracija_korisnika(korisnik: KorisnikCreate):
 
     korisnici.append(korisnik_spreman_za_pohranu)
     return korisnik_spreman_za_pohranu
+
+@app.get("/korisnici",response_model=Korisnik)
+def get_korisnici():
+    return korisnici
