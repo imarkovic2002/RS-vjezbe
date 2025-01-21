@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Literal
+from typing import Optional, Literal,TypedDict
 from datetime import datetime
 
 
@@ -91,3 +91,48 @@ class KorisnikCreate(KorisnikBase):
 class KorisnikResponse(KorisnikBase):
     lozinka_hash: str
     datum_registracije: datetime
+
+## 2.5 Zadaci za vježbu: Definicija složenijih Pydantic modela
+
+# 1. zadatak
+class Izdavač(BaseModel):
+    naziv: str
+    adresa: str
+
+class Knjiga(BaseModel):
+    naslov: str
+    ime_autora: str
+    prezime_autora: str
+    godina_izdavanja: int = datetime.now().year
+    broj_stranica: int
+    izdavač: Izdavač
+
+# 2. zadatak
+class Admin(BaseModel):
+    ime: str
+    prezime: str
+    korisnicko_ime: str
+    email: str
+    ovlasti: list[Literal["dodavanje", "brisanje", "azuriranje", "citanje"]] = []
+
+# 3. zadatak
+class stolInfo(TypedDict):
+    broj: int
+    lokacija: str
+
+class Jelo(BaseModel):
+    id: int
+    naziv: str
+    cijena: float
+
+class RestaurantOrder(BaseModel):
+    id: int 
+    ime_kupca: str
+    stol_info:stolInfo
+    jelo: list[Jelo]
+
+# 4. zadatak
+class CCTV_frame(BaseModel):
+    id: int
+    vrijeme_snimanja: datetime
+    koordinate: tuple[float,float] = (0.0, 0.0)
