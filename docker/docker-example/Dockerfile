@@ -1,6 +1,17 @@
-FROM python:3.11-slim
+# koristi Python 3 kao bazni predložak
+FROM python:3
+
+# postavlja radni direktorij na /app
 WORKDIR /app
-COPY . /app
-RUN pip install -r requirements.txt
+
+# kopira sve datoteke i direktorije iz trenutnog direktorija u /app direktorij kontejnera
+COPY main.py /app
+
+# pokreće Python aplikaciju prilikom pokretanja kontejnera
+CMD ["python", "main.py"]
+
+# instalira Python paket requests prilikom izgradnje predloška
+RUN pip install requests
+
+# dokumentira port 8080 na kojem će kontejner slušati
 EXPOSE 8080
-CMD ["python", "app.py"]
