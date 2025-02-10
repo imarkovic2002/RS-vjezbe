@@ -7,3 +7,7 @@ grupaB-Igor-Markovic.zip
 1.kolokvij/microservice_temperatura_mora.py
 1.kolokvij/__pycache__/TemperaturaMora.cpython-312.pyc
 
+api_film/main.py
+api_film/models.py
+api_film/routers/router_film.py
+api_film/data/films.json
